@@ -23,20 +23,23 @@ I will translate your messages into all chosen languages. After u can reply my a
 
 All u need is to choose necessary languages and start messaging!
 
+Warning: because of free deploy your settings are reset periodically. If u haven't got a translate, don't worry, just choose languages again.
+
 Problems? Questions? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
 
 show_it = 'Show instructions again, bot!'
 want_choose = 'Choose languages'
+#default = 'Set English + Russian'
 
-my_langs = []
+my_langs = ['ru','en']
 
-present = "U haven't selected languages yet"
+present = "U haven't selected languages yet (default russian + english)"
 
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True)
 keyboard1.row(show_it, want_choose)
 
 def choice(id):
-    mes = ['Supported languages:']
+    mes = ['Supported languages:\n']
     mes.extend([f'{n+1}. {lang}' for n, lang in enumerate(translator_tools.all_langs)])
     inds = [76, 22, 71]#[random.randint(1,100), random.randint(1,100), random.randint(1,100)]
     a, _ = translator_tools.get_langs_from_numbers(inds)
