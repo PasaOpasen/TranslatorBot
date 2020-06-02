@@ -42,7 +42,7 @@ def log_text(text, lang_of_text=None, lang_list = ['en','ru']):
     result = []
     
     if len(text) < 3:
-        result.append(f'**too small text**: {text}')
+        result.append(f'too small text: {text}')
         return result
     
     if lang_of_text == None:
@@ -51,13 +51,13 @@ def log_text(text, lang_of_text=None, lang_list = ['en','ru']):
     bool_list = [r != lang_of_text for r in lang_list]
     
     for lang, it in zip(lang_list, bool_list):
-        result.append(f'**{lang_dic_reversed[lang].upper()}**:')
+        result.append(f'{lang_dic_reversed[lang].upper()}:')
         if it:
             txt = translator.translate(text, dest = lang, src = lang_of_text).text
             result.append(txt)
         else:
             txt = text
-            result.append(f'__(original text)__ {text}')
+            result.append(f'(original text) {text}')
         result.append('')
     
     return result
