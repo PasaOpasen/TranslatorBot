@@ -18,13 +18,17 @@ PORT = int(os.environ.get('PORT', '8443'))
 
 
 instructions = """Hello! I'm the translator bot!
-I will translate your messages into all chosen languages. After u can send my answers to your foreign friends!
+
+I will translate your messages into all chosen languages. After u can reply my answers to your foreign friends!
+
 All u need is to choose necessary languages and start messaging!"""
 
 show_it = 'Show instructions again, bot!'
 want_choose = 'Choose languages'
 
 my_langs = []
+
+present = "U haven't selected languages yet"
 
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True)
 keyboard1.row(show_it, want_choose)
@@ -36,7 +40,9 @@ def choice(id):
     a, _ = translator_tools.get_langs_from_numbers(inds)
     mes.append(f"""\nU should choose some languages' numbers and write them like '1 2 3' (without quotes).
 
-For example, the answer '{" ".join([str(i) for i in inds])}' means {", ".join(a)}""")
+For example, the answer '{" ".join([str(i) for i in inds])}' means {", ".join(a)}.
+
+{present}""")
 
     bot.send_message(id, '\n'.join(mes))
 
@@ -52,9 +58,16 @@ def send_text(message):
 
     txt = message.text
     if txt[0].isdigit() and txt[-1].isdigit():
-        global my_langs
+        global my_langs, present
         t, my_langs = translator_tools.get_langs_from_numbers([int(n) for n in txt.split()])
-        bot.send_message(message.chat.id,f"Good! Your langlist is {', '.join([str(i) for i in t])}. Now try to send any message")
+
+        if len(t) < 2:
+            bot.reply_to(message, "No sense to choose only 1 language. Select more")
+            return
+
+        lgs = ', '.join([str(i) for i in t])
+        present = f"Your current langlist is {lgs}"
+        bot.send_message(message.chat.id,f"Good! Your langlist is {lgs}. Now try to send any message")
         return
 
     if txt == show_it:
