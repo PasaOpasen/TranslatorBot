@@ -21,7 +21,9 @@ instructions = """Hello! I'm the translator bot!
 
 I will translate your messages into all chosen languages. After u can reply my answers to your foreign friends!
 
-All u need is to choose necessary languages and start messaging!"""
+All u need is to choose necessary languages and start messaging!
+
+Problems? Questions? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
 
 show_it = 'Show instructions again, bot!'
 want_choose = 'Choose languages'
@@ -36,7 +38,7 @@ keyboard1.row(show_it, want_choose)
 def choice(id):
     mes = ['Supported languages:']
     mes.extend([f'{n+1}. {lang}' for n, lang in enumerate(translator_tools.all_langs)])
-    inds = [random.randint(1,100), random.randint(1,100), random.randint(1,100)]
+    inds = [76, 22, 71]#[random.randint(1,100), random.randint(1,100), random.randint(1,100)]
     a, _ = translator_tools.get_langs_from_numbers(inds)
     mes.append(f"""\nU should choose some languages' numbers and write them like '1 2 3' (without quotes).
 
