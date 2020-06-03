@@ -23,7 +23,8 @@ I will translate your messages into all chosen languages. After u can reply my a
 
 All u need is to choose necessary languages and start messaging!
 
-Warning: because of free deploy your settings are reset periodically. If u haven't got a translate, don't worry, just choose languages again.
+
+WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate, don't worry, just choose languages again. Fortunately, if u will send message into language not from langlist, this one is added automatically.
 
 Problems? Questions? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
 
@@ -33,7 +34,7 @@ want_choose = 'Choose languages'
 
 my_langs = ['ru','en']
 
-present = "U haven't selected languages yet (default russian + english)"
+present = "U haven't selected languages yet (default Russian+English)"
 
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True)
 keyboard1.row(show_it, want_choose)
@@ -45,7 +46,7 @@ def choice(id):
     a, _ = translator_tools.get_langs_from_numbers(inds)
     mes.append(f"""\nU should choose some languages' numbers and write them like '1 2 3' (without quotes).
 
-For example, the answer '{" ".join([str(i) for i in inds])}' means {", ".join(a)}.
+For example, the answer '{" ".join([str(i) for i in inds])}' means {"+".join(a)}.
 
 {present}""")
 
@@ -70,7 +71,7 @@ def send_text(message):
             bot.reply_to(message, "No sense to choose only 1 language. Select more")
             return
 
-        lgs = ', '.join([str(i) for i in t])
+        lgs = '+'.join([str(i) for i in t])
         present = f"Your current langlist is {lgs}"
         bot.send_message(message.chat.id,f"Good! Your langlist is {lgs}. Now try to send any message")
         return
@@ -80,7 +81,7 @@ def send_text(message):
     elif txt == want_choose:
         choice(message.chat.id)
     else:
-        res = translator_tools.log_text(txt, None, my_langs)
+        res = translator_tools.log_text(txt, my_langs)
         bot.send_message(message.chat.id, '\n'.join(res))
 
 

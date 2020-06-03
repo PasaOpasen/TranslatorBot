@@ -37,7 +37,7 @@ def get_code_from_lang(lang):
     return lang_dic[lang.tolower()]
 
 
-def log_text(text, lang_of_text=None, lang_list = ['en','ru']):
+def log_text(text, lang_list = ['en','ru']):
     
     result = []
     
@@ -45,10 +45,14 @@ def log_text(text, lang_of_text=None, lang_list = ['en','ru']):
         result.append(f'too small text: {text}')
         return result
     
-    if lang_of_text == None:
-        lang_of_text = translator.detect(text).lang
+
+    lang_of_text = translator.detect(text).lang
 
     bool_list = [r != lang_of_text for r in lang_list]
+    
+    if all(bool_list):
+        bool_list.append(False)
+        lang_list.append(lang_of_text)
     
     for lang, it in zip(lang_list, bool_list):
         result.append(f'{lang_dic_reversed[lang].upper()}:')
@@ -76,12 +80,17 @@ def get_langs_from_numbers(numbers):
 
 if __name__ == '__main__':
    
-    r = log_text('hello my friend',None,['en','ru'])
+    defs = ['en','ru']
+    
+    r = log_text('hello my friend',defs)
     
     print('\n'.join(r))
 
+    r = log_text('Ich will',defs)
     
+    print('\n'.join(r))
     
+    print(defs)
     
     
     
