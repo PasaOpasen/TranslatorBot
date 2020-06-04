@@ -21,10 +21,12 @@ instructions = """Hello! I'm the translator bot!
 
 I will translate your messages into all chosen languages. After u can reply my answers to your foreign friends!
 
+Also u can reply messages here.
+
 All u need is to choose necessary languages and start messaging!
 
 
-WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate, don't worry, just choose languages again. Fortunately, if u will send message into language not from langlist, this one is added automatically.
+WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate in 10sec, don't worry, just choose languages again. Fortunately, if u will send message into language not from langlist, this one is added automatically.
 
 Problems? Questions? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
 

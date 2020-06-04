@@ -1,1 +1,1 @@
-web: python3 apptest.py
+web: python3 groups.py
