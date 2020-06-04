@@ -7,7 +7,7 @@ import telebot
 from flask import Flask, request
 import os
 
-API_TOKEN = '1146428469:AAGbR6x3n-p-1QJmdQ71aQtoAsFH7lrcSZ8'
+API_TOKEN = '1059809966:AAHfjWbOyF3h-F_UZi6krWylOHvA7W3SGE4'
 
 bot = telebot.TeleBot(API_TOKEN)
 server = Flask(__name__)
@@ -27,6 +27,8 @@ All u need is to choose necessary languages and start messaging!
 
 
 WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate in 10sec, don't worry, just choose languages again. Fortunately, if u will send message into language not from langlist, this one is added automatically.
+
+IF U USE ME IN GROUP, u should write long messages (to translate) or reply any my message (to translate or set settings from your message)
 
 Problems? Questions? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
 
@@ -65,8 +67,10 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def send_message_global(message):
-    if message.chat.type == 'group':
+    if message.chat.type == 'group' and message.reply_to_message is None:
         global counter
+        #print(message)
+
         if len(message.text) > 15:
             send_text_group(message)
             counter = 1
