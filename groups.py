@@ -29,7 +29,7 @@ All u need is to choose necessary languages and start messaging!
 WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate in 10sec, don't worry, just choose languages again. Fortunately, if u will send message into language not from langlist, this one is added automatically.
 
 IF U USE ME IN GROUP, u should write long messages (to translate) or reply any my message (to translate or set settings from your message) or just reply any another message. 
-If u want send long message without translation, u should end it by symbol "#"
+If u wanna send long message without translation, u should end it by symbol "#", and if u want to translate short message right simpler, just end it by "##"
 
 Problems? Questions? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
 
@@ -68,19 +68,29 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def send_message_global(message):
+    txt = message.text
 
-    if message.text[-1] == '#' or message.text[0] == '/':
+    if len(txt) < 3:
+        return
+
+    if txt[-1] == '#':
+        if txt[-2] == '#':
+            send_text_group(message)
+        else:
+            return
+
+    if txt[0] == '/':
         return
 
     if message.chat.type == 'group' and message.reply_to_message is None:
         global counter
         #print(message)
 
-        if len(message.text) > 20:
+        if len(txt) > 20:
             send_text_group(message)
             counter = 1
-        elif counter % 10 == 0:
-            bot.send_message(message.chat.id, "don't forget me!")
+        elif counter % 25 == 0:
+            bot.send_message(message.chat.id, "don't forget me! 😊")
             counter = 1
         else:
             counter += 1
