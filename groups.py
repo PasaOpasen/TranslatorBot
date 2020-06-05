@@ -35,11 +35,19 @@ Problems? Questions? Write an issue https://github.com/PasaOpasen/TranslatorBot"
 
 show_it = 'Show instructions again, bot!'
 want_choose = 'Choose languages'
-#default = 'Set English + Russian'
 
-my_langs = ['ru','en']
+class Chat:
+    def __init__(self):
+        self.langs = ['ru','en']
+        self.counter = 1
+    def counter_to_default(self):
+        self.counter = 1
+    def counter_inc(self):
+        self.counter += 1
+    def counter_equals(self,value):
+        return self.counter == value
 
-counter = 1
+chats = {}
 
 present = "U haven't selected languages yet (default Russian+English)"
 
@@ -63,7 +71,8 @@ For example, the answer '{" ".join([str(i) for i in inds])}' means {"+".join(a)}
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_message(message.chat.id, instructions, reply_markup=keyboard1)
-    #bot.reply_to(message, "Hi there, I am EchoBot.")
+    if message.chat.id not in chats:
+        chats[message.chat.id] = Chat()
 
 
 @bot.message_handler(content_types=['text'])
@@ -83,31 +92,29 @@ def send_message_global(message):
         return
 
     if message.chat.type == 'group' and message.reply_to_message is None:
-        global counter
-        #print(message)
 
-        if len(txt) > 20:
+        if len(txt) > 25:
             send_text_group(message)
-            counter = 1
-        elif counter % 25 == 0:
+            chats[message.chat.id].counter_to_default()
+        elif chats[message.chat.id].counter_equals(25):
             bot.send_message(message.chat.id, "don't forget me! 😊")
-            counter = 1
+            chats[message.chat.id].counter_to_default()
         else:
-            counter += 1
+            chats[message.chat.id].counter_inc()
     else:
         send_text(message)
 
 def send_text_group(message, from_short=False):
     txt = message.text
-    res = translator_tools.log_text(txt, my_langs) if not from_short else translator_tools.log_text(txt[:-2], my_langs)
+    res = translator_tools.log_text(txt, chats[message.chat.id].langs) if not from_short else translator_tools.log_text(txt[:-2], chats[message.chat.id].langs)
     bot.reply_to(message, '\n'.join(res))
 
 def send_text(message):
 
     txt = message.text
     if txt[0].isdigit() and txt[-1].isdigit():
-        global my_langs, present
-        t, my_langs = translator_tools.get_langs_from_numbers([int(n) for n in txt.split()])
+        global present
+        t, chats[message.chat.id].langs = translator_tools.get_langs_from_numbers([int(n) for n in txt.split()])
 
         if len(t) < 2:
             bot.reply_to(message, "No sense to choose only 1 language. Select more")
@@ -115,7 +122,7 @@ def send_text(message):
 
         lgs = '+'.join([str(i) for i in t])
         present = f"Your current langlist is {lgs}"
-        bot.send_message(message.chat.id,f"Good! Your langlist is {lgs}. Now try to send any message")
+        bot.send_message(message.chat.id, f"Good! Your langlist is {lgs}. Now try to send any message")
         return
 
     if txt == show_it:
@@ -123,7 +130,7 @@ def send_text(message):
     elif txt == want_choose:
         choice(message.chat.id)
     else:
-        res = translator_tools.log_text(txt, my_langs)
+        res = translator_tools.log_text(txt, chats[message.chat.id].langs)
         bot.send_message(message.chat.id, '\n'.join(res))
 
 
