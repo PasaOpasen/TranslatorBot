@@ -15,8 +15,6 @@ PORT = int(os.environ.get('PORT', '8443'))
 
 
 
-
-
 instructions = """Hello! I'm the translator bot!
 
 I will translate your messages into all chosen languages. After u can reply my answers to your foreign friends!
@@ -40,6 +38,7 @@ class Chat:
     def __init__(self):
         self.langs = ['ru','en']
         self.counter = 1
+        self.present = "U haven't selected languages yet (default Russian+English)"
     def counter_to_default(self):
         self.counter = 1
     def counter_inc(self):
@@ -49,12 +48,12 @@ class Chat:
 
 chats = {}
 
-present = "U haven't selected languages yet (default Russian+English)"
+
 
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True)
 keyboard1.row(show_it, want_choose)
 
-def choice(id):
+def choice(message):
     mes = ['Supported languages:\n']
     mes.extend([f'{n+1}. {lang}' for n, lang in enumerate(translator_tools.all_langs)])
     inds = [76, 22, 71]#[random.randint(1,100), random.randint(1,100), random.randint(1,100)]
@@ -63,9 +62,9 @@ def choice(id):
 
 For example, the answer '{" ".join([str(i) for i in inds])}' means {"+".join(a)}.
 
-{present}""")
+{chats[message.chat.id].present}""")
 
-    bot.send_message(id, '\n'.join(mes))
+    bot.send_message(message.chat.id, '\n'.join(mes))
 
 
 @bot.message_handler(commands=['start'])
@@ -113,7 +112,6 @@ def send_text(message):
 
     txt = message.text
     if txt[0].isdigit() and txt[-1].isdigit():
-        global present
         t, chats[message.chat.id].langs = translator_tools.get_langs_from_numbers([int(n) for n in txt.split()])
 
         if len(t) < 2:
@@ -121,14 +119,14 @@ def send_text(message):
             return
 
         lgs = '+'.join([str(i) for i in t])
-        present = f"Your current langlist is {lgs}"
+        chats[message.chat.id].present = f"Your current langlist is {lgs}"
         bot.send_message(message.chat.id, f"Good! Your langlist is {lgs}. Now try to send any message")
         return
 
     if txt == show_it:
         start_message(message)
     elif txt == want_choose:
-        choice(message.chat.id)
+        choice(message)
     else:
         res = translator_tools.log_text(txt, chats[message.chat.id].langs)
         bot.send_message(message.chat.id, '\n'.join(res))
