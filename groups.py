@@ -14,8 +14,9 @@ server = Flask(__name__)
 PORT = int(os.environ.get('PORT', '8443'))
 
 
+border = 30
 
-instructions = """Hello! I'm the translator bot!
+instructions = f"""Hello! I'm the translator bot!
 
 I will translate your messages into all chosen languages. After u can reply my answers to your foreign friends!
 
@@ -23,13 +24,15 @@ Also u can reply messages here.
 
 All u need is to choose necessary languages and start messaging!
 
+IF U USE ME IN GROUP, there are several rules:
+1) replied messages are translated by default
+2) messages longer than {border} symbols are translated by default
+3) if the message SHOULD BE TRANSLATED then end it by '##'
+4) if the message SHOULD NOT BE TRANSLATED then end or start it by '#'
 
 WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate in 10sec, don't worry, just choose languages again. Fortunately, if u will send message into language not from langlist, this one is added automatically.
 
-IF U USE ME IN GROUP, u should write long messages (to translate) or reply any my message (to translate or set settings from your message) or just reply any another message. 
-If u wanna send long message without translation, u should end it by symbol "#", and if u want to translate short message simpler, just end it by "##"
-
-Problems? Questions? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
+Problems? Questions? Advice? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
 
 show_it = 'Show instructions again, bot!'
 want_choose = 'Choose languages'
@@ -48,7 +51,7 @@ class Chat:
     def get_current_languages(self):
         if self.langs == ['ru', 'en']:
             return self.present
-        return f"Your current langlist is {['+'.join([translator_tools.lang_dic_reversed[i] for i in self.langs])]}"
+        return f"Your current langlist is {'+'.join([translator_tools.lang_dic_reversed[i] for i in self.langs])}"
 
 chats = {}
 
@@ -90,15 +93,14 @@ def send_message_global(message):
     if txt[-1] == '#':
         if txt[-2] == '#':
             send_text_group(message, True)
-        else:
-            return
+        return
 
-    if txt[0] == '/':
+    if txt[0] in ['#' , '/'] or txt.startswith('htt'):
         return
 
     if message.chat.type == 'group' and message.reply_to_message is None:
 
-        if len(txt) > 25:
+        if len(txt) > border:
             send_text_group(message)
             chats[message.chat.id].counter_to_default()
         elif chats[message.chat.id].counter_equals(25):
