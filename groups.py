@@ -45,6 +45,10 @@ class Chat:
         self.counter += 1
     def counter_equals(self,value):
         return self.counter == value
+    def get_current_languages(self):
+        if self.langs == ['ru', 'en']:
+            return  self.present
+        return f"Your current langlist is {['+'.join([translator_tools.lang_dic_reversed[i] for i in self.langs])]}"
 
 chats = {}
 
@@ -62,7 +66,7 @@ def choice(message):
 
 For example, the answer '{" ".join([str(i) for i in inds])}' means {"+".join(a)}.
 
-{chats[message.chat.id].present}""")
+{chats[message.chat.id].get_corrent_langiages()}""")
 
     bot.send_message(message.chat.id, '\n'.join(mes))
 
@@ -73,13 +77,15 @@ def start_message(message):
     if message.chat.id not in chats:
         chats[message.chat.id] = Chat()
 
-
 @bot.message_handler(content_types=['text'])
 def send_message_global(message):
     txt = message.text
 
     if len(txt) < 3:
         return
+
+    if message.chat.id not in chats:
+        chats[message.chat.id] = Chat()
 
     if txt[-1] == '#':
         if txt[-2] == '#':
@@ -119,7 +125,7 @@ def send_text(message):
             return
 
         lgs = '+'.join([str(i) for i in t])
-        chats[message.chat.id].present = f"Your current langlist is {lgs}"
+        #chats[message.chat.id].present = f"Your current langlist is {lgs}"
         bot.send_message(message.chat.id, f"Good! Your langlist is {lgs}. Now try to send any message")
         return
 
