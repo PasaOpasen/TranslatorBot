@@ -47,7 +47,7 @@ class Chat:
         return self.counter == value
     def get_current_languages(self):
         if self.langs == ['ru', 'en']:
-            return  self.present
+            return self.present
         return f"Your current langlist is {['+'.join([translator_tools.lang_dic_reversed[i] for i in self.langs])]}"
 
 chats = {}
@@ -66,7 +66,7 @@ def choice(message):
 
 For example, the answer '{" ".join([str(i) for i in inds])}' means {"+".join(a)}.
 
-{chats[message.chat.id].get_corrent_langiages()}""")
+{chats[message.chat.id].get_current_languages()}""")
 
     bot.send_message(message.chat.id, '\n'.join(mes))
 
