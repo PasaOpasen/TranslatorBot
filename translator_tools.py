@@ -7,6 +7,8 @@ Created on Tue Jun  2 17:55:33 2020
 
 import googletrans
 from googletrans import Translator
+from textblob import TextBlob
+import time
 #import speech_recognition as sr
 #from scipy.io.wavfile import write
 #import numpy as np
@@ -69,6 +71,38 @@ def log_text(text, lang_list = ['en','ru']):
     return result
 
 
+def log_text_better(text, lang_list = ['en','ru']):
+    
+    result = []
+    
+    if len(text) < 3:
+        result.append(f'too small text: {text}')
+        return result
+    
+    blob = TextBlob(text)
+
+    lang_of_text = blob.detect_language()
+
+    bool_list = [r != lang_of_text for r in lang_list]
+    
+    if all(bool_list):
+        bool_list.append(False)
+        lang_list.append(lang_of_text)
+    
+    for lang, it in zip(lang_list, bool_list):
+        result.append(f'{lang_dic_reversed[lang].upper()}:')
+        if it:
+            time.sleep(1.3)
+            txt = str(blob.translate(from_lang = lang_of_text, to=lang))
+            result.append(txt)
+        else:
+            txt = text
+            result.append(f'(original text) {text}')
+        result.append('')
+    
+    return result
+
+
 def get_langs_from_numbers(numbers):
     
     l1 = [all_langs[k-1] for k in numbers]
@@ -93,6 +127,10 @@ if __name__ == '__main__':
     print('\n'.join(r))
     
     print(defs)
+    
+    r = log_text_better('hello my friend',defs)
+    
+    print('\n'.join(r))
     
     
     

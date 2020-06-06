@@ -29,8 +29,9 @@ IF U USE ME IN GROUP, there are several rules:
 2) messages longer than {border} symbols are translated by default
 3) if the message SHOULD BE TRANSLATED then end it by '##'
 4) if the message SHOULD NOT BE TRANSLATED then end or start it by '#'
+5) if u wanna get better translation, end message by '##+' (but it takes time)
 
-WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate in 10sec, don't worry, just choose languages again. Fortunately, if u will send message into language not from langlist, this one is added automatically.
+WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate in 10sec, don't worry, just choose languages again or write '/start' command. Fortunately, if u will send message into language not from langlist, this one is added automatically.
 
 Problems? Questions? Advice? Write an issue https://github.com/PasaOpasen/TranslatorBot"""
 
@@ -95,7 +96,11 @@ def send_message_global(message):
             send_text_group(message, True)
         return
 
-    if txt[0] in ['#' , '/'] or txt.startswith('htt'):
+    if txt.endswith('##+'):
+        send_text_group_better(message)
+        return
+
+    if txt[0] in ['#', '/'] or txt.startswith('htt'):
         return
 
     if message.chat.type == 'group' and message.reply_to_message is None:
@@ -114,6 +119,11 @@ def send_message_global(message):
 def send_text_group(message, from_short=False):
     txt = message.text
     res = translator_tools.log_text(txt, chats[message.chat.id].langs) if not from_short else translator_tools.log_text(txt[:-2], chats[message.chat.id].langs)
+    bot.reply_to(message, '\n'.join(res))
+
+def send_text_group_better(message):
+    txt = message.text
+    res = translator_tools.log_text_better(txt[:-3], chats[message.chat.id].langs)
     bot.reply_to(message, '\n'.join(res))
 
 def send_text(message):
