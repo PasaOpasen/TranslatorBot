@@ -30,6 +30,7 @@ IF U USE ME IN GROUP, there are several rules:
 3) if the message SHOULD BE TRANSLATED then end it by '##'
 4) if the message SHOULD NOT BE TRANSLATED then end or start it by '#'
 5) if u wanna get better translation, end message by '##+' (but it takes time)
+6) please, use correct words otherwise the language of your message can be recognized wrong
 
 WARNING: because of free deploy your settings are reset periodically. If u haven't got a translate in 10sec, don't worry, just choose languages again or write '/start' command. Fortunately, if u will send message into language not from langlist, this one is added automatically.
 
@@ -37,6 +38,7 @@ Problems? Questions? Advice? Write an issue https://github.com/PasaOpasen/Transl
 
 show_it = 'Show instructions again, bot!'
 want_choose = 'Choose languages'
+want_delete = 'Go to the last language configuration'
 
 class Chat:
     def __init__(self, id):
@@ -44,7 +46,8 @@ class Chat:
         self.counter = 1
         self.present = "U haven't selected languages yet (default Russian+English)"
         self.id = id
-        print(f"new chat with id = {id}")
+        print(f"---------> new chat with id = {id}")
+        self.used = {}
     def counter_to_default(self):
         self.counter = 1
     def counter_inc(self):
@@ -56,12 +59,45 @@ class Chat:
             return self.present
         return f"Your current langlist is {'+'.join([translator_tools.lang_dic_reversed[i] for i in self.langs])}"
 
+    def increment_used(self):
+        for l in self.langs:
+            if l in self.used:
+                self.used[l] += 1
+            else:
+                self.used[l] = 0
+
+    def correct_used(self):
+        total = sum(self.used.values())
+        percents = [val/total for val in self.used.values()]
+        res = []
+        for (lang, count), percent in zip(self.used.items(),percents):
+            if count == 0:
+                res.append(f'delete {lang} language because of only 1 time usage')
+                del self.used[lang]
+            elif percent < 0.1:
+                res.append(f'delete {lang} language because of it is just {percent:.2%} < 10% of usage')
+                del self.used[lang]
+
+        st = 'Cannot detect excess languages' if len(res)==0 else '\n'.join(res)
+
+        bot.send_message(self.id, st, reply_markup=keyboard1)
+
+    def get_count_of_langs(self):
+        return len(self.langs)
+
+
+
 chats = {}
 
 
 
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True)
 keyboard1.row(show_it, want_choose)
+
+keyboard2 = telebot.types.ReplyKeyboardMarkup(True,True)
+keyboard2.row(show_it, want_choose)
+keyboard2.row(want_delete)
+
 
 def choice(message):
     mes = ['Supported languages:\n']
@@ -119,15 +155,21 @@ def send_message_global(message):
         send_text(message)
 
 def send_text_group(message, from_short=False):
+    k = chats[message.chat.id].get_count_of_langs()
+
     txt = message.text
     res = translator_tools.log_text(txt, chats[message.chat.id].langs) if not from_short else translator_tools.log_text(txt[:-2], chats[message.chat.id].langs)
-    bot.reply_to(message, '\n'.join(res))
+    chats[message.chat.id].increment_used()
+    if chats[message.chat.id].get_count_of_langs()-k:
+        bot.reply_to(message, '\n'.join(res), reply_markup=keyboard2)
+    else:
+        bot.reply_to(message, '\n'.join(res))
 
 def send_text_group_better(message):
     txt = message.text
     res = translator_tools.log_text_better(txt[:-3], chats[message.chat.id].langs)
     bot.reply_to(message, '\n'.join(res))
-    print(f'message from chat {message.chat.id} with langs {chats[message.chat.id].langs}')
+    print(f'----------> message from chat {message.chat.id} with langs {chats[message.chat.id].langs}')
 
 def send_text(message):
 
@@ -148,6 +190,8 @@ def send_text(message):
         start_message(message)
     elif txt == want_choose:
         choice(message)
+    elif txt == want_delete:
+        chats[message.chat.id].correct_used()
     else:
         res = translator_tools.log_text(txt, chats[message.chat.id].langs)
         bot.send_message(message.chat.id, '\n'.join(res))
