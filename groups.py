@@ -198,7 +198,7 @@ def send_text(message):
 
         lgs = '+'.join([str(i) for i in t])
         #chats[message.chat.id].present = f"Your current langlist is {lgs}"
-        bot.send_message(message.chat.id, f"Good! Your langlist is {lgs}. Now try to send any message", parse_mode='markdown')
+        bot.send_message(message.chat.id, f"Good! Your langlist is {lgs}. Now try to send any message", parse_mode='Markdown')
         return
 
     if txt == show_it:
