@@ -173,9 +173,17 @@ def send_text_group(message, from_short=False):
         bot.reply_to(message, '\n'.join(res))
 
 def send_text_group_better(message):
+    k = chats[message.chat.id].get_count_of_langs()
+
     txt = message.text
     res = translator_tools.log_text_better(txt[:-3], chats[message.chat.id].langs)
-    bot.reply_to(message, '\n'.join(res))
+    chats[message.chat.id].increment_used()
+
+    if chats[message.chat.id].get_count_of_langs() - k:
+        bot.reply_to(message, '\n'.join(res), reply_markup=keyboard2)
+    else:
+        bot.reply_to(message, '\n'.join(res))
+
     print(f'----------> message from chat {message.chat.id} with langs {chats[message.chat.id].langs}')
 
 def send_text(message):
@@ -200,9 +208,14 @@ def send_text(message):
     elif txt == want_delete:
         chats[message.chat.id].correct_used()
     else:
+        k = chats[message.chat.id].get_count_of_langs()
         res = translator_tools.log_text(txt, chats[message.chat.id].langs)
-        bot.send_message(message.chat.id, '\n'.join(res))
+        chats[message.chat.id].increment_used()
 
+        if chats[message.chat.id].get_count_of_langs() - k:
+            bot.send_message(message.chat.id, '\n'.join(res), reply_markup=keyboard2)
+        else:
+            bot.send_message(message.chat.id, '\n'.join(res))
 
 
 
