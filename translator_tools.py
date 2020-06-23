@@ -31,7 +31,7 @@ translator = Translator(service_urls = ['translate.google.com', 'translate.googl
 
 
 lang_dic = {value.title(): key for key, value in googletrans.LANGUAGES.items()}
-lang_dic_reversed = {key: f'**{value.capitalize()}**' for key, value in googletrans.LANGUAGES.items()}
+lang_dic_reversed = {key: f'*{value.capitalize()}*' for key, value in googletrans.LANGUAGES.items()}
 
 all_langs = list(lang_dic.keys())
 
