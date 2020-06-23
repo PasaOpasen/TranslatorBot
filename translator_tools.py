@@ -25,8 +25,9 @@ import time
 
 
 epis = {}
-translator = Translator()
-bad_result_message = '**!!! BAD RESULT OF RECOGNITION. U CAN TRY AGAIN**'
+translator = Translator(service_urls = ['translate.google.com', 'translate.google.co.kr'])
+
+#bad_result_message = '**!!! BAD RESULT OF RECOGNITION. U CAN TRY AGAIN**'
 
 
 lang_dic = {value.title(): key for key, value in googletrans.LANGUAGES.items()}

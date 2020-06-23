@@ -39,10 +39,12 @@ show_it = 'Show instructions again, bot!'
 want_choose = 'Choose languages'
 
 class Chat:
-    def __init__(self):
+    def __init__(self, id):
         self.langs = ['ru','en']
         self.counter = 1
         self.present = "U haven't selected languages yet (default Russian+English)"
+        self.id = id
+        print(f"new chat with id = {id}")
     def counter_to_default(self):
         self.counter = 1
     def counter_inc(self):
@@ -79,7 +81,7 @@ For example, the answer '{" ".join([str(i) for i in inds])}' means {"+".join(a)}
 def start_message(message):
     bot.send_message(message.chat.id, instructions, reply_markup=keyboard1)
     if message.chat.id not in chats:
-        chats[message.chat.id] = Chat()
+        chats[message.chat.id] = Chat(message.chat.id)
 
 @bot.message_handler(content_types=['text'])
 def send_message_global(message):
@@ -89,7 +91,7 @@ def send_message_global(message):
         return
 
     if message.chat.id not in chats:
-        chats[message.chat.id] = Chat()
+        chats[message.chat.id] = Chat(message.chat.id)
 
     if txt[-1] == '#':
         if txt[-2] == '#':
@@ -108,7 +110,7 @@ def send_message_global(message):
         if len(txt) > border:
             send_text_group(message)
             chats[message.chat.id].counter_to_default()
-        elif chats[message.chat.id].counter_equals(25):
+        elif chats[message.chat.id].counter_equals(40):
             bot.send_message(message.chat.id, "don't forget me! 😊")
             chats[message.chat.id].counter_to_default()
         else:
@@ -125,6 +127,7 @@ def send_text_group_better(message):
     txt = message.text
     res = translator_tools.log_text_better(txt[:-3], chats[message.chat.id].langs)
     bot.reply_to(message, '\n'.join(res))
+    print(f'message from chat {message.chat.id} with langs {chats[message.chat.id].langs}')
 
 def send_text(message):
 
