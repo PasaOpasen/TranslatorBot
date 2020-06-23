@@ -1,5 +1,6 @@
 
 import translator_tools
+from translator_tools import from_code_to_name
 import random
 
 import telebot
@@ -72,15 +73,17 @@ class Chat:
         res = []
         lg = []
         for (lang, count), percent in zip(self.used.items(),percents):
+            g = from_code_to_name(lang)
             if count == 0:
-                res.append(f'delete {lang} language because of only 1 time usage')
+                res.append(f'delete {g} language because of only 1 time usage')
                 lg.append(lang)
             elif percent < 0.1:
-                res.append(f'delete {lang} language because of it is just {percent:.2%} < 10% of usage')
+                res.append(f'delete {g} language because of it is just {percent:.2%} < 10% of usage')
                 lg.append(lang)
 
         for lang in lg:
             del self.used[lang]
+            self.langs.remove(lang)
 
         st = 'Cannot detect excess languages' if len(res) == 0 else '\n'.join(res)
 

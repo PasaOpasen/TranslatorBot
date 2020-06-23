@@ -35,6 +35,9 @@ lang_dic_reversed = {key: value.capitalize() for key, value in googletrans.LANGU
 
 all_langs = list(lang_dic.keys())
 
+def from_code_to_name(language):
+    return  lang_dic_reversed[language]
+
 def smart_to_tidy(langs):
     return [lang_dic_reversed[l] for l in langs]
 
