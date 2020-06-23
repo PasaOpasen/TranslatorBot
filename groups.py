@@ -70,15 +70,19 @@ class Chat:
         total = sum(self.used.values())
         percents = [val/total for val in self.used.values()]
         res = []
+        lg = []
         for (lang, count), percent in zip(self.used.items(),percents):
             if count == 0:
                 res.append(f'delete {lang} language because of only 1 time usage')
-                del self.used[lang]
+                lg.append(lang)
             elif percent < 0.1:
                 res.append(f'delete {lang} language because of it is just {percent:.2%} < 10% of usage')
-                del self.used[lang]
+                lg.append(lang)
 
-        st = 'Cannot detect excess languages' if len(res)==0 else '\n'.join(res)
+        for lang in lg:
+            del self.used[lang]
+
+        st = 'Cannot detect excess languages' if len(res) == 0 else '\n'.join(res)
 
         bot.send_message(self.id, st, reply_markup=keyboard1)
 
