@@ -12,5 +12,5 @@ I'm using it into dialogs with my foreign friends. U should just create the grou
 
 U can use 2, 3, 4 and more languages at the same time!
 
-
+![1](https://github.com/PasaOpasen/TranslatorBot/blob/master/gifs/g.gif)
 
