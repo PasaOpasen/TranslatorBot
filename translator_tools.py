@@ -31,7 +31,7 @@ translator = Translator(service_urls = ['translate.google.com', 'translate.googl
 
 
 lang_dic = {value.title(): key for key, value in googletrans.LANGUAGES.items()}
-lang_dic_reversed = {key: f'{value.capitalize()}' for key, value in googletrans.LANGUAGES.items()}
+lang_dic_reversed = {key: f'*{value.capitalize()}*' for key, value in googletrans.LANGUAGES.items()}
 
 all_langs = list(lang_dic.keys())
 
@@ -50,7 +50,7 @@ def log_text(text, lang_list = ['en','ru']):
     result = []
     
     if len(text) < 3:
-        result.append(f'too small text: {text}')
+        result.append(f'*too small text*: {text}')
         return result
     
 
@@ -69,7 +69,7 @@ def log_text(text, lang_list = ['en','ru']):
             result.append(txt)
         else:
             txt = text
-            result.append(f'(original text) {text}')
+            result.append(f'_(original text)_ {text}')
         result.append('')
     
     return result
@@ -80,7 +80,7 @@ def log_text_better(text, lang_list = ['en','ru']):
     result = []
     
     if len(text) < 3:
-        result.append(f'too small text: {text}')
+        result.append(f'*too small text*: {text}')
         return result
     
     blob = TextBlob(text)
@@ -101,7 +101,7 @@ def log_text_better(text, lang_list = ['en','ru']):
             result.append(txt)
         else:
             txt = text
-            result.append(f'(original text) {text}')
+            result.append(f'_(original text)_ {text}')
         result.append('')
     
     return result
