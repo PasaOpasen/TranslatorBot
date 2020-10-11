@@ -36,6 +36,7 @@ All u need is to choose necessary languages and start messaging! 😉
 *IF U USE ME IN GROUP*, there are several rules: 😲
   1) replied messages are translated by default
   2) messages longer than {border} symbols are translated by default
+        _it can be disabled!_
     
   3) if the message *SHOULD BE TRANSLATED* then end it by '##'
   4) if the message *SHOULD NOT BE TRANSLATED* then end or start it by '#'
@@ -57,14 +58,21 @@ want_delete = 'Remove excess languages'
 go_to_english = 'Go to only english'
 
 
+enabled = 'Enable automatic translation'
+disabled = 'Disable automatic translation'
+
+
 class Chat:
     def __init__(self, chat_id):
         self.langs = ['ru','en']
         self.counter = 1
         self.present = "U have default settings (_Russian+English_)"
         self.id = chat_id
-        print(f"---------> new chat with id = {id}")
+        print(f"---------> new chat with id = {chat_id}")
         self.used = {}
+        
+        self.enable = True
+        
     def counter_to_default(self):
         self.counter = 1
     def counter_inc(self):
@@ -106,7 +114,7 @@ class Chat:
 
         st = f'_Cannot detect excess languages_, your current counter is {self.used}' if len(res) == 0 else '\n'.join(res)
 
-        bot.send_message(self.id, st, reply_markup=keyboard1, parse_mode='Markdown')
+        bot.send_message(self.id, st, reply_markup = get_keyboard1(self.enable), parse_mode='Markdown')
 
     def get_count_of_langs(self):
         return len(self.langs)
@@ -124,14 +132,30 @@ chats = {}
 
 
 
-keyboard1 = telebot.types.ReplyKeyboardMarkup(True,True)
-keyboard1.row(show_it, want_choose)
-keyboard1.row(go_to_english)
+keyboard1_enabled = telebot.types.ReplyKeyboardMarkup(True,True)
+keyboard1_enabled .row(show_it, want_choose)
+keyboard1_enabled .row(go_to_english, enabled)
 
-keyboard2 = telebot.types.ReplyKeyboardMarkup(True,True)
-keyboard2.row(show_it, want_choose)
-keyboard2.row(go_to_english, want_delete)
-#keyboard2.row(want_delete)
+keyboard1_disabled = telebot.types.ReplyKeyboardMarkup(True,True)
+keyboard1_disabled .row(show_it, want_choose)
+keyboard1_disabled .row(go_to_english, disabled)
+
+
+keyboard2_enabled = telebot.types.ReplyKeyboardMarkup(True,True)
+keyboard2_enabled.row(show_it, want_choose)
+keyboard2_enabled.row(go_to_english, enabled)
+keyboard2_enabled.row(want_delete)
+
+keyboard2_disabled = telebot.types.ReplyKeyboardMarkup(True,True)
+keyboard2_disabled.row(show_it, want_choose)
+keyboard2_disabled.row(go_to_english, disabled)
+keyboard2_disabled.row(want_delete)
+
+
+def get_keyboard1(enable):
+    return keyboard1_enabled if not enable else keyboard1_disabled
+def get_keyboard2(enable):
+    return keyboard2_enabled if not enable else keyboard2_disabled
 
 
 message_for_choice = ['*Supported languages*:\n'] + [f'{n+1}. {lang}' for n, lang in enumerate(translator_tools.all_langs)]
@@ -151,7 +175,7 @@ For example, the answer '{" ".join([str(i) for i in inds])}' means *{"+".join(a)
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    bot.send_message(message.chat.id, instructions, reply_markup=keyboard1, parse_mode='Markdown')
+    bot.send_message(message.chat.id, instructions, reply_markup=get_keyboard1(True), parse_mode='Markdown')
     if message.chat.id not in chats:
         chats[message.chat.id] = Chat(message.chat.id)
 
@@ -182,8 +206,9 @@ def send_message_global(message):
     if message.chat.type == 'group' and message.reply_to_message is None:
 
         if len(txt) > border:
-            send_text_group(message)
-            chats[message.chat.id].counter_to_default()
+            if chats[message.chat.id].enable:
+                send_text_group(message)
+                chats[message.chat.id].counter_to_default()
         elif chats[message.chat.id].counter_equals(40):
             bot.send_message(message.chat.id, "*don't forget me!* 😊", parse_mode='Markdown')
             chats[message.chat.id].counter_to_default()
@@ -202,7 +227,7 @@ def send_text_group(message, from_short = False):
     
     chats[message.chat.id].increment_used()
     if chats[message.chat.id].get_count_of_langs() > k:
-        bot.reply_to(message, '\n'.join(res), reply_markup=keyboard2, parse_mode='Markdown')
+        bot.reply_to(message, '\n'.join(res), reply_markup=get_keyboard2(chats[message.chat.id].enable), parse_mode='Markdown')
     else:
         bot.reply_to(message, '\n'.join(res), parse_mode='Markdown')
 
@@ -214,7 +239,7 @@ def send_text_group_better(message):
     chats[message.chat.id].increment_used()
 
     if chats[message.chat.id].get_count_of_langs() - k:
-        bot.reply_to(message, '\n'.join(res), reply_markup=keyboard2, parse_mode='Markdown')
+        bot.reply_to(message, '\n'.join(res), reply_markup=get_keyboard2(chats[message.chat.id].enable), parse_mode='Markdown')
     else:
         bot.reply_to(message, '\n'.join(res),parse_mode='Markdown')
 
@@ -246,13 +271,18 @@ def send_text(message):
     elif txt == go_to_english:
         chats[message.chat.id].to_english()
         bot.send_message(message.chat.id, 'Now you are using only english')
-    else:
+    elif txt in (enabled, disabled):
+        en = txt == enabled
+        chats[message.chat.id].enable = en
+        bot.send_message(message.chat.id, f'Automatic translation {"enabled" if en else "disabled"}', reply_markup=get_keyboard1(en), parse_mode='Markdown')
+    
+    elif chats[message.chat.id].enable:
         k = chats[message.chat.id].get_count_of_langs()
         res = translator_tools.log_text(txt, chats[message.chat.id].langs)
         chats[message.chat.id].increment_used()
 
         if chats[message.chat.id].get_count_of_langs() - k:
-            bot.send_message(message.chat.id, '\n'.join(res), reply_markup=keyboard2, parse_mode='Markdown')
+            bot.send_message(message.chat.id, '\n'.join(res), reply_markup=get_keyboard2(chats[message.chat.id].enable), parse_mode='Markdown')
         else:
             bot.send_message(message.chat.id, '\n'.join(res), parse_mode='Markdown')
 
