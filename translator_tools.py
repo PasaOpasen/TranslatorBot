@@ -9,6 +9,7 @@ import googletrans
 from googletrans import Translator
 from textblob import TextBlob
 import time
+
 #import speech_recognition as sr
 #from scipy.io.wavfile import write
 #import numpy as np
@@ -35,6 +36,8 @@ lang_dic_reversed = {key: f'*{value.capitalize()}*' for key, value in googletran
 
 all_langs = list(lang_dic.keys())
 
+
+
 def from_code_to_name(language):
     return  lang_dic_reversed[language]
 
@@ -50,7 +53,7 @@ def log_text(text, lang_list = ['en','ru']):
     result = []
     
     if len(text) < 3:
-        result.append(f'*too small text*: {text}')
+        result.append(f'*too shirt text*: {text}')
         return result
     
 
@@ -80,7 +83,7 @@ def log_text_better(text, lang_list = ['en','ru']):
     result = []
     
     if len(text) < 3:
-        result.append(f'*too small text*: {text}')
+        result.append(f'*too shirt text*: {text}')
         return result
     
     blob = TextBlob(text)
