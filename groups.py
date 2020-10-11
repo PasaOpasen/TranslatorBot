@@ -8,7 +8,7 @@ import telebot
 from flask import Flask, request
 import os
 
-TESTING = True
+TESTING = False
 DEPLOY = not TESTING
 
 if TESTING:
@@ -130,8 +130,8 @@ keyboard1.row(go_to_english)
 
 keyboard2 = telebot.types.ReplyKeyboardMarkup(True,True)
 keyboard2.row(show_it, want_choose)
-keyboard2.row(go_to_english)
-keyboard2.row(want_delete)
+keyboard2.row(go_to_english, want_delete)
+#keyboard2.row(want_delete)
 
 
 message_for_choice = ['*Supported languages*:\n'] + [f'{n+1}. {lang}' for n, lang in enumerate(translator_tools.all_langs)]
