@@ -8,7 +8,7 @@ import telebot
 from flask import Flask, request
 import os
 
-TESTING = False
+TESTING = True
 DEPLOY = not TESTING
 
 if TESTING:

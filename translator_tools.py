@@ -7,7 +7,11 @@ Created on Tue Jun  2 17:55:33 2020
 
 import googletrans
 from googletrans import Translator
+
+#from pygoogletranslation import Translator
+
 from textblob import TextBlob
+
 import time
 
 #import speech_recognition as sr
@@ -26,7 +30,9 @@ import time
 
 
 epis = {}
+
 translator = Translator(service_urls = ['translate.google.com', 'translate.google.co.kr'])
+#translator = Translator()
 
 #bad_result_message = '**!!! BAD RESULT OF RECOGNITION. U CAN TRY AGAIN**'
 
@@ -58,6 +64,8 @@ def log_text(text, lang_list = ['en','ru']):
     
 
     lang_of_text = translator.detect(text).lang
+    #if len(lang_of_text) == 0: lang_of_text = 'en'
+    #print(lang_of_text)
 
     bool_list = [r != lang_of_text for r in lang_list]
     
@@ -68,6 +76,8 @@ def log_text(text, lang_list = ['en','ru']):
     for lang, it in zip(lang_list, bool_list):
         result.append(f'{lang_dic_reversed[lang].upper()}:')
         if it:
+            time.sleep(0.7)
+            #print(f"{text}, {lang}, {lang_of_text}")
             txt = translator.translate(text, dest = lang, src = lang_of_text).text
             result.append(txt)
         else:
@@ -122,6 +132,15 @@ def get_langs_from_numbers(numbers):
 
 
 if __name__ == '__main__':
+
+    #trans = Translator()
+    #print(trans.detect('Привет'))
+    #print(trans.detect('Hello').lang)
+    #print(trans.translate('Привет'))
+
+
+
+
    
     defs = ['en','ru']
     
@@ -138,6 +157,9 @@ if __name__ == '__main__':
     r = log_text_better('hello my friend',defs)
     
     print('\n'.join(r))
+
+    lang = Translator().detect('Hello boy')
+    print(lang)
     
     
     
