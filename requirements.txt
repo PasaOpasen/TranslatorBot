@@ -5,7 +5,7 @@ Flask==1.1.2
 googletrans==2.4.0
 idna==2.9
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 pyTelegramBotAPI==3.7.1
 requests==2.23.0
