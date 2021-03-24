@@ -1,4 +1,5 @@
 
+from tokens import TOKENS
 import translator_tools
 from translator_tools import from_code_to_name
 import random
@@ -8,13 +9,13 @@ import telebot
 from flask import Flask, request
 import os
 
-TESTING = True
+TESTING = False
 DEPLOY = not TESTING
 
 if TESTING:
-    API_TOKEN = '1059809966:AAHfjWbOyF3h-F_UZi6krWylOHvA7W3SGE4'
+    API_TOKEN = TOKENS['TEST']
 else:
-    API_TOKEN = '1146428469:AAGbR6x3n-p-1QJmdQ71aQtoAsFH7lrcSZ8'
+    API_TOKEN = TOKENS['PROD']
 
 
 

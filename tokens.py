@@ -1,0 +1,7 @@
+
+TOKENS = {
+    'TEST': '1662421413:AAGPgvfEaDZ11LA5lmXaoVmdIZ9Ni0hojWs',
+    'PROD': '1684596216:AAF7hQ3xsS0uRalvvy_5ZxilobJTaBn2HHY'
+}
+
+
