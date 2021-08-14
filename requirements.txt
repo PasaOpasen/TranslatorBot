@@ -10,6 +10,6 @@ MarkupSafe==1.1.1
 pyTelegramBotAPI==3.7.1
 requests==2.23.0
 six==1.15.0
-urllib3==1.25.9
+urllib3==1.26.5
 Werkzeug==1.0.1
 textblob==0.15.3
